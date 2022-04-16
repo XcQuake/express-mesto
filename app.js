@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
@@ -10,6 +11,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 const app = express();
 
+app.use(cors());
 app.use((req, res, next) => {
   req.user = {
     _id: '625837a47d782ef277322eaa',
