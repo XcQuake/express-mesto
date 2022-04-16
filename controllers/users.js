@@ -8,10 +8,17 @@ module.exports.getUsers = (req, res, next) => {
     .catch((err) => next(err));
 };
 
-module.exports.getUser = (req, res, next) => {
+module.exports.getUserById = (req, res, next) => {
   User.find({ _id: req.params.userId })
     .orFail(() => { throw new NotFoundError('Пользователь по указанному _id не найден.'); })
-    .then((user) => res.send(user))
+    .then((user) => res.status(200).send(user))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        throw new BadRequestError('Передан некорректный _id пользователя');
+      } else {
+        next(err);
+      }
+    })
     .catch((err) => next(err));
 };
 
