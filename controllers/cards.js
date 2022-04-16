@@ -5,7 +5,7 @@ const Card = require('../models/card');
 module.exports.getCards = (req, res, next) => {
   Card.find({})
     .populate(['owner', 'likes'])
-    .then((cards) => res.send({ data: cards }))
+    .then((cards) => res.send(cards))
     .catch((err) => next(err));
 };
 
@@ -13,7 +13,7 @@ module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         throw new BadRequestError('Переданы некорректные данные при создании карточки.');
@@ -29,7 +29,7 @@ module.exports.deleteCard = (req, res, next) => {
 
   Card.findByIdAndRemove(cardId)
     .orFail(() => { throw new NotFoundError('Карточка с указанным _id не найдена.'); })
-    .then(() => res.status(200).send({ message: 'Карточка удалена' }))
+    .then(() => res.send({ message: 'Карточка удалена' }))
     .catch((err) => {
       if (err.name === 'CastError') {
         throw new BadRequestError('Передан некорректный _id пользователя');
@@ -43,7 +43,7 @@ module.exports.deleteCard = (req, res, next) => {
 module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .orFail(() => { throw new NotFoundError('Передан несуществующий _id карточки.'); })
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
         throw new BadRequestError('Переданы некорректные данные для постановки лайка.');
@@ -57,7 +57,7 @@ module.exports.likeCard = (req, res, next) => {
 module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
     .orFail(() => { throw new NotFoundError('Передан несуществующий _id карточки.'); })
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
         throw new BadRequestError('Переданы некорректные данные для снятии лайка.');
