@@ -1,10 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const { errorHandler } = require('./middlewares/errorHandler');
-const usersRouter = require('./routes/users');
-const cardsRouter = require('./routes/cards');
-const NotFoundError = require('./errors/NotFoundError');
+const router = require('./routes/index');
 
 const { PORT = 3000 } = process.env;
 
@@ -14,19 +13,12 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 const app = express();
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '625a9c1a565e1a75b410ff62',
-  };
-
-  next();
-});
+app.use(cookieParser());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use('/users', usersRouter);
-app.use('/cards', cardsRouter);
-app.use(() => { throw new NotFoundError('Ресурс по указанному адресу не найден'); });
+
+app.use(router);
 
 app.use(errorHandler);
 
