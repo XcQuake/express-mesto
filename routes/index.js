@@ -10,8 +10,10 @@ const { signinValidation, signupValidation } = require('../middlewares/validatio
 router.post('/signin', signinValidation, login);
 router.post('/signup', signupValidation, createUser);
 
-router.use('/users', auth, usersRouter);
-router.use('/cards', auth, cardsRouter);
+router.use(auth);
+
+router.use('/users', usersRouter);
+router.use('/cards', cardsRouter);
 
 router.use(() => { throw new NotFoundError('Ресурс по указанному адресу не найден'); });
 
