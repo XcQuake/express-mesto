@@ -5,9 +5,10 @@ const { login, createUser } = require('../controllers/users');
 const usersRouter = require('./users');
 const cardsRouter = require('./cards');
 const NotFoundError = require('../errors/NotFoundError');
+const { signinValidation, signupValidation } = require('../middlewares/validation');
 
-router.post('/signin', login);
-router.post('/signup', createUser);
+router.post('/signin', signinValidation, login);
+router.post('/signup', signupValidation, createUser);
 
 router.use('/users', auth, usersRouter);
 router.use('/cards', auth, cardsRouter);

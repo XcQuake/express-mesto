@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const { errors } = require('celebrate');
 const { errorHandler } = require('./middlewares/errorHandler');
 const router = require('./routes/index');
 
@@ -19,6 +20,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(router);
+
+app.use(errors());
 
 app.use(errorHandler);
 
