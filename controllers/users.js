@@ -41,14 +41,13 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные при создании пользователя.');
+        next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
       } else if (err.code === 11000) {
-        throw new ConflictError('Пользователь с этой почтой уже зарегистрирован');
+        next(new ConflictError('Пользователь с этой почтой уже зарегистрирован'));
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 module.exports.getCurrentUser = (req, res, next) => {
@@ -65,11 +64,11 @@ module.exports.getUsers = (req, res, next) => {
 
 module.exports.getUserById = (req, res, next) => {
   User.findById({ _id: req.params.userId })
-    .orFail(() => { throw new NotFoundError('Пользователь по указанному _id не найден.'); })
+    .orFail(() => { next(new NotFoundError('Пользователь по указанному _id не найден.')); })
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Передан некорректный _id пользователя');
+        next(new BadRequestError('Передан некорректный _id пользователя'));
       } else {
         next(err);
       }
@@ -82,16 +81,15 @@ module.exports.updateProfile = (req, res, next) => {
   const profileId = req.user._id;
 
   User.findByIdAndUpdate(profileId, { name, about }, { new: true, runValidators: true })
-    .orFail(() => { throw new NotFoundError('Пользователь по указанному _id не найден.'); })
+    .orFail(() => { next(new NotFoundError('Пользователь по указанному _id не найден.')); })
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные при обновлении профиля.');
+        next(new BadRequestError('Переданы некорректные данные при обновлении профиля.'));
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 module.exports.updateAvatar = (req, res, next) => {
@@ -99,14 +97,13 @@ module.exports.updateAvatar = (req, res, next) => {
   const profileId = req.user;
 
   User.findByIdAndUpdate(profileId, { avatar }, { new: true, runValidators: true })
-    .orFail(() => { throw new NotFoundError('Пользователь по указанному _id не найден.'); })
+    .orFail(() => { next(NotFoundError('Пользователь по указанному _id не найден.')); })
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные при обновлении аватара');
+        next(new BadRequestError('Переданы некорректные данные при обновлении аватара'));
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 };
